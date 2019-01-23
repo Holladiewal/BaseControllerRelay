@@ -18,10 +18,14 @@ class Handler(socketserver.BaseRequestHandler):
 
     def handle(self):
         data = self.request.recv(1024)
-        self.request.send(buffer.pop(0))
+        if len(buffer) > 0:
+            self.request.send(buffer.pop(0).encode('utf-8'))
+        else:
+
+            self.request.send("\0\1\0\1\0\n".encode('utf-8'))
 
 
-class Relay(object):
+class Relay:
     sock: socketserver
 
     def send(self, msg: str):
@@ -30,9 +34,9 @@ class Relay(object):
         buffer.append(msg)
 
     def __init__(self):
-        self.sock = socketserver.TCPServer(("whydoyouhate.me", 5002), Handler)
+        self.sock = socketserver.TCPServer(("127.0.0.1", 5002), Handler)
         server_thread: Thread = threading.Thread(target=self.sock.serve_forever, daemon=True)
-        server_thread.run()
+        server_thread.start()
 
 
 

@@ -7,8 +7,11 @@ import cherrypy
 from relay.main_relay import Relay
 
 
-class webUI(object):
-    relay = Relay()
+class WebUI:
+
+    def __init__(self):
+        self.relay = Relay()
+        pass
 
     @cherrypy.expose
     def index(self):
@@ -17,12 +20,14 @@ class webUI(object):
     @cherrypy.expose
     def send(self, msg: str = None):
         if msg:
-            if not self.relay.setUp_done:
-                self.relay.setUp()
-                self.relay.accept()
             self.relay.send(msg)
+        return "sent: " + msg
+
+    @cherrypy.expose
+    def send_form(self):
+        return open("./html/send_message.html")
 
 
-if __name__ == '__main__':
-    cherrypy.quickstart(webUI())
+# if __name__ == '__main__':
+cherrypy.quickstart(WebUI())
 
