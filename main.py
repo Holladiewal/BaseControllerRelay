@@ -25,13 +25,14 @@ class WebUI:
 
     @cherrypy.expose
     def send_form(self, list_devices="generic"):
-        relay.main_relay.ls_response["generic"] = [("ae", "AE controller"), ("power", "Power Controller")]
-        relay.main_relay.ls_response["power"] = [("", "Power main"), ("", "Quarry Power")]
+        relay.main_relay.ls_response["generic"] = [("/send_form?list_devices=ae", "AE controller"),
+                                                   ("/send_form?list_devices=power", "Power Controller")]
+        relay.main_relay.ls_response["power"] = [("/send?msg=power\0\1 shutdown mains", "Power main"), ("", "Quarry Power")]
         if list_devices not in relay.main_relay.ls_response.keys():
             relay.main_relay.ls_response[list_devices] = []
         html: str = ''.join(open("./html/send_message.html").readlines())
 
-        html_list_part: str = "<li> <a href=/send_form?list_devices={k}>{v}</a> </li>"
+        html_list_part: str = "<li> <a href={k}>{v}</a> </li>"
         html_list: str = ""
         for k, v in relay.main_relay.ls_response[list_devices]:
             html_list += html_list_part.format(k=k, v=v)
